@@ -35,6 +35,7 @@ function mod() {
 }
 
 function lint() {
+  mod "$@"
   local mapper="bowexecutor"
 
   echo "fmt and linting binary ${mapper}..."
@@ -46,6 +47,7 @@ function lint() {
 }
 
 function build() {
+  lint "$@"
   local mapper="bowexecutor"
 
   local flags=" -w -s "
