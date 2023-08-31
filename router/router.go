@@ -1,7 +1,6 @@
 package router
 
 import (
-	"github.com/smilelinkd/bowexecutor/api"
 	"github.com/smilelinkd/bowexecutor/driver"
 	"github.com/smilelinkd/bowexecutor/middleware"
 	"github.com/smilelinkd/bowexecutor/pkg/httpadapter"
@@ -17,7 +16,7 @@ func NewRouter(client *driver.DigitalbowClient) *gin.Engine {
 
 	route := r.Group("/")
 	{
-		route.GET("ping", api.Ping)
+		route.GET("ping", httpadapter.Ping)
 		route.POST("download", restController.Download)
 		route.GET("websocket", restController.Socket)
 	}

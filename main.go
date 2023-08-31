@@ -20,5 +20,7 @@ func Setup() *gin.Engine {
 
 func main() {
 	r := Setup()
-	r.Run(":8080")
+	if err := r.Run(":8080"); err != nil {
+		klog.Errorf("Run start error: %v", err)
+	}
 }

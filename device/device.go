@@ -17,14 +17,11 @@ limitations under the License.
 package device
 
 import (
-	"sync"
 	"time"
 
 	"github.com/smilelinkd/bowexecutor/driver"
 	"github.com/smilelinkd/bowexecutor/pkg/common"
 )
-
-var wg sync.WaitGroup
 
 // InitBow initialize bow client
 func InitBow() (client *driver.DigitalbowClient, err error) {

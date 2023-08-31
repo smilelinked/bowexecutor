@@ -107,9 +107,8 @@ func (c *socketClient) writePump() {
 	}()
 	for {
 		message, ok := <-c.send
-		c.conn.SetWriteDeadline(time.Now().Add(writeWait))
-		if !ok {
-			c.conn.WriteMessage(websocket.CloseMessage, []byte{})
+		if err := c.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil || !ok {
+			err = c.conn.WriteMessage(websocket.CloseMessage, []byte{})
 			return
 		}
 
@@ -117,12 +116,16 @@ func (c *socketClient) writePump() {
 		if err != nil {
 			return
 		}
-		w.Write(message)
+		if _, err = w.Write(message); err != nil {
+			return
+		}
 
 		// Add queued chat messages to the current websocket message.
 		n := len(c.send)
 		for i := 0; i < n; i++ {
-			w.Write(<-c.send)
+			if _, err = w.Write(<-c.send); err != nil {
+				return
+			}
 		}
 
 		if err := w.Close(); err != nil {

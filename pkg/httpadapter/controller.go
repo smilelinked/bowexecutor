@@ -1,6 +1,7 @@
 package httpadapter
 
 import (
+	"net/http"
 	"strconv"
 	"time"
 
@@ -36,6 +37,10 @@ func (c *RestController) Download(ctx *gin.Context) {
 	}
 	c.Client.SetStatus(common.StatusReady)
 	utils.Success(ctx, nil, response)
+}
+
+func Ping(c *gin.Context) {
+	c.String(http.StatusOK, "pong")
 }
 
 func (c *RestController) Socket(ctx *gin.Context) {
