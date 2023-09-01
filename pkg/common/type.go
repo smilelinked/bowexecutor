@@ -17,7 +17,7 @@ type DownloadRequest struct {
 type ExecuteRequest struct {
 	ID      uint64 `json:"id"`
 	Segment string `json:"segment"`
-	Start   int    `json:"strat"`
+	Start   int    `json:"start"`
 	End     int    `json:"end"`
 	Period  int    `json:"period"`
 }
