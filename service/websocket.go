@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"k8s.io/klog/v2"
 )
 
 var manager *socketManager
@@ -109,6 +110,9 @@ func (c *socketClient) writePump() {
 		message, ok := <-c.send
 		if err := c.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil || !ok {
 			err = c.conn.WriteMessage(websocket.CloseMessage, []byte{})
+			if err != nil {
+				klog.Info("closed failed.")
+			}
 			return
 		}
 
