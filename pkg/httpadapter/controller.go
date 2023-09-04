@@ -30,7 +30,7 @@ func (c *RestController) Download(ctx *gin.Context) {
 	c.Client.SetStatus(common.StatusSyncing)
 	err := c.Client.DownloadResult(downResultRequest.Path, downResultRequest.Segment)
 	if err != nil {
-		log.Printf("Can't download file into memory: ", err)
+		log.Printf("Can't download file into memory: %v", err)
 		utils.Warning(ctx, utils.CodeParamError, "Can't download file into memory")
 		c.Client.SetStatus(common.StatusReady)
 		return
@@ -119,14 +119,14 @@ func (c *RestController) Execute(ctx *gin.Context, executeRequest common.Execute
 			log.Printf("execute with %v", clylen)
 			_, err := port.Write(c.Client.AssembleSerialData(clylen))
 			if err != nil {
-				log.Println("Error writing to serial port:%v ", err)
+				log.Printf("Error writing to serial port:%v", err)
 				return
 			}
 		}
 		// reset..
 		_, err = port.Write(c.Client.ResetToZero())
 		if err != nil {
-			log.Println("Error writing to serial port:%v ", err)
+			log.Printf("Error writing to serial port:%v ", err)
 			return
 		}
 		// close websocket.
