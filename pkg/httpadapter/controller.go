@@ -5,14 +5,14 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gin-gonic/gin"
-	"github.com/smilelinkd/bowexecutor/service"
-	"github.com/smilelinkd/bowexecutor/utils"
+	"gonum.org/v1/gonum/mat"
 	"k8s.io/klog/v2"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jacobsa/go-serial/serial"
 	"github.com/smilelinkd/bowexecutor/pkg/common"
-	"gonum.org/v1/gonum/mat"
+	"github.com/smilelinkd/bowexecutor/service"
+	"github.com/smilelinkd/bowexecutor/utils"
 )
 
 func (c *RestController) Download(ctx *gin.Context) {
@@ -45,7 +45,7 @@ func Ping(c *gin.Context) {
 
 func (c *RestController) Socket(ctx *gin.Context) {
 	var executeRequest common.ExecuteRequest
-	if err := ctx.ShouldBind(&executeRequest); err != nil {
+	if err := ctx.BindQuery(&executeRequest); err != nil {
 		utils.Warning(ctx, utils.CodeParamError, "Bad request, failed to decode JSON")
 		return
 	}
@@ -57,8 +57,6 @@ func (c *RestController) Execute(ctx *gin.Context, executeRequest common.Execute
 		utils.Warning(ctx, utils.CodeNotReady, "For now device is not ready please try next time!")
 		return
 	}
-
-	response := "This is API " + common.APIVersion + ". Now is " + time.Now().Format(time.UnixDate)
 
 	if _, ok := c.Client.Movements[executeRequest.Segment]; !ok {
 		utils.Warning(ctx, utils.CodeNotReady, "The segment does not exist, please download first!")
@@ -112,7 +110,12 @@ func (c *RestController) Execute(ctx *gin.Context, executeRequest common.Execute
 				input32[i] = float32(input64[i])
 			}
 			c.Client.Client.Execute(input32, clylen)
-			time.Sleep(33 * time.Millisecond)
+			if executeRequest.Period == 0 {
+				time.Sleep(33 * time.Millisecond)
+			} else {
+				time.Sleep(time.Duration(executeRequest.Period) * time.Millisecond)
+			}
+
 			klog.V(2).Infof("execute with %v", clylen)
 			_, err := port.Write(c.Client.AssembleSerialData(clylen))
 			if err != nil {
@@ -129,6 +132,4 @@ func (c *RestController) Execute(ctx *gin.Context, executeRequest common.Execute
 		// close websocket.
 		service.CloseClientSocket(executeRequest.ID)
 	}()
-
-	utils.Success(ctx, nil, response)
 }

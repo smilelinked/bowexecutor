@@ -93,7 +93,7 @@ func (c *socketClient) readPump() {
 	for {
 		_, message, err := c.conn.ReadMessage()
 		if err != nil {
-			log.Printf("error: %v", err)
+			log.Printf("read error, but not really an error, this connection has been closed, so we can't read any more.: %v", err)
 			break
 		}
 		c.manager.receive <- map[*socketClient][]byte{
@@ -111,7 +111,7 @@ func (c *socketClient) writePump() {
 		if err := c.conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil || !ok {
 			err = c.conn.WriteMessage(websocket.CloseMessage, []byte{})
 			if err != nil {
-				klog.Info("closed failed.")
+				klog.Info("we will close this connection.")
 			}
 			return
 		}
