@@ -99,7 +99,10 @@ func (c *RestController) Execute(ctx *gin.Context, executeRequest common.Execute
 				break
 			}
 			// send back current index record.
-			service.SendClientSocket(executeRequest.ID, strconv.Itoa(record))
+			if success := service.SendClientSocket(executeRequest.ID, strconv.Itoa(record)); !success {
+				// 发送失败，没有可用的连接，说明已经断了，初步判定，client 断了连接。
+				return
+			}
 			matrixA := mat.NewDense(1, 6, bowResult)
 			matrixInit := mat.NewDense(1, 6, aInit)
 			var sixdofA mat.Dense

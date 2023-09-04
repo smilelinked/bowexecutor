@@ -138,12 +138,14 @@ func (c *socketClient) writePump() {
 	}
 }
 
-func SendClientSocket(name uint64, message string) {
+func SendClientSocket(name uint64, message string) bool {
 	for k := range manager.clients {
 		if k.name == name {
 			k.send <- []byte(message)
+			return true
 		}
 	}
+	return false
 }
 
 func SendAllSocket(message string) {
