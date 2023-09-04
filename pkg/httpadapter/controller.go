@@ -1,12 +1,12 @@
 package httpadapter
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 	"time"
 
 	"gonum.org/v1/gonum/mat"
-	"k8s.io/klog/v2"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jacobsa/go-serial/serial"
@@ -30,7 +30,7 @@ func (c *RestController) Download(ctx *gin.Context) {
 	c.Client.SetStatus(common.StatusSyncing)
 	err := c.Client.DownloadResult(downResultRequest.Path, downResultRequest.Segment)
 	if err != nil {
-		klog.Error("Can't download file into memory: ", err)
+		log.Printf("Can't download file into memory: ", err)
 		utils.Warning(ctx, utils.CodeParamError, "Can't download file into memory")
 		c.Client.SetStatus(common.StatusReady)
 		return
@@ -79,7 +79,7 @@ func (c *RestController) Execute(ctx *gin.Context, executeRequest common.Execute
 	go func() {
 		port, err := serial.Open(options)
 		if err != nil {
-			klog.V(2).Infof("Error opening serial port... %v", err)
+			log.Printf("Error opening serial port... %v", err)
 			return
 		}
 		defer port.Close()
@@ -116,17 +116,17 @@ func (c *RestController) Execute(ctx *gin.Context, executeRequest common.Execute
 				time.Sleep(time.Duration(executeRequest.Period) * time.Millisecond)
 			}
 
-			klog.V(2).Infof("execute with %v", clylen)
+			log.Printf("execute with %v", clylen)
 			_, err := port.Write(c.Client.AssembleSerialData(clylen))
 			if err != nil {
-				klog.Errorf("Error writing to serial port:%v ", err)
+				log.Println("Error writing to serial port:%v ", err)
 				return
 			}
 		}
 		// reset..
 		_, err = port.Write(c.Client.ResetToZero())
 		if err != nil {
-			klog.Errorf("Error writing to serial port:%v ", err)
+			log.Println("Error writing to serial port:%v ", err)
 			return
 		}
 		// close websocket.
