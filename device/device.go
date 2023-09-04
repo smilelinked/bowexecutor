@@ -26,7 +26,7 @@ import (
 // InitBow initialize bow client
 func InitBow() (client *driver.DigitalbowClient, err error) {
 	COM := common.COMStruct{
-		SerialPort: "/dev/ttyS0",
+		SerialPort: "/dev/ttyUSB0",
 		BaudRate:   115200,
 		DataBits:   8,
 		Parity:     "even",
