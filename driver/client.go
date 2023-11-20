@@ -210,7 +210,7 @@ func (c *DigitalbowClient) DownloadResult(path, segment string) (err error) {
 	}
 	input := &obs.GetObjectInput{}
 	input.Bucket = obsConfig["NAME"]
-	input.Key = fmt.Sprintf("%s/%s_track.json", path, segment)
+	input.Key = fmt.Sprintf("%s/%s.json", path, segment)
 	content := make([]byte, 0)
 	output, err := obsClient.GetObject(input)
 	if err == nil {
